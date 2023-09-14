@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+</head>
+<body>
+    <h1>Product Management</h1>
+    <div>
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" placeholder="Product Name">
+    </div>
+    <div>
+        <label for="productQuantity">Quantity:</label>
+        <input type="number" id="productQuantity" placeholder="Quantity">
+    </div>
+    <div>
+        <label for="productPrice">Price:</label>
+        <input type="number" id="productPrice" placeholder="Price">
+    </div>
+    <button onclick="addProduct()">Add Product</button>
+
+    <h2>Product List</h2>
+    <ul id="productList"></ul>
+
+    <script>
+        
+        function addProduct() {
+            const productName = document.getElementById('productName').value;
+            const productQuantity = document.getElementById('productQuantity').value;
+            const productPrice = document.getElementById('productPrice').value;
+
+            if (!productName || !productQuantity || !productPrice) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const productId = Date.now().toString(); 
+            const product = {
+                id: productId,
+                name: productName,
+                quantity: productQuantity,
+                price: productPrice,
+            };
+
+            
+            const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+            
+            existingProducts.push(product);
+
+            
+            localStorage.setItem('products', JSON.stringify(existingProducts));
+
+            
+            document.getElementById('productName').value = '';
+            document.getElementById('productQuantity').value = '';
+            document.getElementById('productPrice').value = '';
+
+            
+            displayProducts();
+        }
+
+       
+        function displayProducts() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+
+            products.forEach((product) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    Product ID: ${product.id}<br>
+                    Name: ${product.name}<br>
+                    Quantity: ${product.quantity}<br>
+                    Price: ${product.price}<br>
+                    <button onclick="updateQuantity('${product.id}')">Update Quantity</button>
+                `;
+                productList.appendChild(listItem);
+            });
+        }
+
+        
+        function updateQuantity(productId) {
+            const newQuantity = prompt('Enter the new quantity:');
+            if (newQuantity === null || isNaN(newQuantity)) {
+                alert('Invalid quantity');
+                return;
+            }
+
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const productIndex = products.findIndex((product) => product.id === productId);
+
+            if (productIndex !== -1) {
+                products[productIndex].quantity = newQuantity;
+                localStorage.setItem('products', JSON.stringify(products));
+                displayProducts();
+            }
+        }
+
+        
+        displayProducts();
+    </script>
+</body>
+</html>
